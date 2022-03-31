@@ -1,0 +1,6 @@
+name: Votekick
+main: me.miicro.votekick.Votekick
+version: 1.0
+author: miicro
+commands:
+  votekick:

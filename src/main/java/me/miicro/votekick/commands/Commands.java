@@ -70,7 +70,7 @@ public class Commands implements CommandExecutor {
                 return true;
             }
             Player votePlayer = server.getPlayerExact(parameter);
-            
+
             if (votePlayer == null) {
                 MessageSender.sendToPlayer(p, "No such player online!");
                 return true;

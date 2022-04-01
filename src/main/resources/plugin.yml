@@ -4,3 +4,5 @@ version: 1.0
 author: miicro
 commands:
   votekick:
+    usage: /votekick [player|yes|no|stop|reload]
+    aliases: vk

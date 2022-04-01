@@ -5,20 +5,19 @@ import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 public class MessageSender {
-    private String pluginPrefix = "[Votekick] ";
-    private String cPluginPrefix = "&C[&FVotekick&C]&F ";
+    private final static String PLUGIN_PREFIX = "[Votekick] ";
+    private final static String CPLUGIN_PREFIX = "&C[&FVotekick&C]&F ";
 
-
-    public void sendToPlayer (Player p, String message) {
-        p.sendMessage(cPluginPrefix + message);
+    public static void sendToPlayer (Player p, String message) {
+        p.sendMessage(CPLUGIN_PREFIX + message);
     }
 
-    public void broadcastMessage (Server server, String message) {
-        server.broadcastMessage(cPluginPrefix + message);
+    public static void broadcastMessage (Server server, String message) {
+        server.broadcastMessage(CPLUGIN_PREFIX + message);
     }
 
-    public void sendToConsole (Server server, String message) {
-        server.getConsoleSender().sendMessage(pluginPrefix + message);
+    public static void sendToConsole (Server server, String message) {
+        server.getConsoleSender().sendMessage(PLUGIN_PREFIX + message);
     }
 
 }

@@ -8,7 +8,7 @@ public class Votekick extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getCommand("votekick").setExecutor(new Commands(this, new VoteExecutor()));
+        this.getCommand("votekick").setExecutor(new Commands(this, new VoteExecutor(this)));
     }
 
 

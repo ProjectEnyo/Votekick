@@ -49,7 +49,8 @@ public class Commands implements CommandExecutor {
                     return true;
                 }
                 //TODO count vote + select player as voted
-                MessageSender.sendToPlayer(p, "Voted " + parameter.toUpperCase());
+                MessageSender.sendToConsole(server, p.getDisplayName() + "has voted " + parameter.toLowerCase() + ".");
+                MessageSender.sendToPlayer(p, "Voted " + parameter.toLowerCase());
             }
             // handle other args (STOP and RELOAD should work, RELOAD is handled earlier)
             else {
@@ -75,7 +76,7 @@ public class Commands implements CommandExecutor {
                 MessageSender.sendToPlayer(p, "No such player online!");
                 return true;
             } else {
-                //TODO start vote with votePlayer
+                voteExecutor.starVote(p, votePlayer);
                 return true;
             }
         }

@@ -28,11 +28,12 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
-        String parameter = args[0].toLowerCase();
-        Player p = (Player) sender;
-        if (args.length > 1) {
+        if (args.length == 0 || args.length > 1) {
             return false;
         }
+
+        String parameter = args[0].toLowerCase();
+        Player p = (Player) sender;
 
         // Check permissions first
         if ((parameter.equals(CommandArgs.RELOAD.value) || parameter.equals(CommandArgs.STOP.value)) && !p.isOp()) {

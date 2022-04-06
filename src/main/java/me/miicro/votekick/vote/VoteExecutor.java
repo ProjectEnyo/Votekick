@@ -15,7 +15,7 @@ public class VoteExecutor {
     private Map<UUID, String> votedPlayers = new HashMap<UUID, String>();
     private Player playerToBeKicked; // player getting votted off
     private int votesFor = 0;
-    private int neededVotes = 0;
+    private int neededVotes = 5;
     private Votekick plugin;
     private double votePercentage = 0.5; // TODO read from config
     private int voteTime = 30; //TODO get from config

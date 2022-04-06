@@ -2,6 +2,7 @@ package me.miicro.votekick.vote;
 
 import me.miicro.votekick.Votekick;
 import me.miicro.votekick.util.MessageSender;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -13,7 +14,7 @@ public class VoteExecutor {
     private Map<UUID, String> votedPlayers = new HashMap<UUID, String>();
     private Player playerToBeKicked; // player getting votted off
     private int votesFor = 0;
-    private int neededVotes = 5;
+    private int neededVotes = 0;
     private Votekick plugin;
     private double votePercentage = 0.5; // TODO read from config
     private int voteTime = 30; //TODO get from config
@@ -55,14 +56,19 @@ public class VoteExecutor {
             @Override
             public void run() {
                 cVoteTime--;
-                if (cVoteTime == 0 || neededVotes >= votesFor) {
-                     if (neededVotes >= votesFor) {
+                if (cVoteTime == 0 || votesFor >= neededVotes) {
+                     if (votesFor >= neededVotes) {
                          MessageSender.broadcastMessage(plugin.getServer(), pVoted.getDisplayName() + " has been kicked out!");
-                         pVoted.kickPlayer("You have been kicked from the server!");
+                         Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+                             public void run() {
+                                 pVoted.kickPlayer("You have been kicked from the server!");
+                             }
+                         }, 10L);
                      } else {
                         MessageSender.broadcastMessage(plugin.getServer(), "The kick vote did not pass!");
                      }
                      endVote();
+                     this.cancel();
                 }
 
                 if (cVoteTime == halftime) {

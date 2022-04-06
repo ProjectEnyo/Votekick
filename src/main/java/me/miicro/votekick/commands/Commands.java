@@ -49,7 +49,7 @@ public class Commands implements CommandExecutor {
                     return true;
                 }
                 //TODO count vote + select player as voted
-                MessageSender.sendToConsole(server, p.getDisplayName() + "has voted " + parameter.toLowerCase() + ".");
+                MessageSender.sendToConsole(server, p.getDisplayName() + " has voted " + parameter.toLowerCase() + ".");
                 MessageSender.sendToPlayer(p, "Voted " + parameter.toLowerCase());
             }
             // handle other args (STOP and RELOAD should work, RELOAD is handled earlier)

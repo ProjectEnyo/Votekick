@@ -2,8 +2,6 @@ package me.miicro.votekick.vote;
 
 import me.miicro.votekick.Votekick;
 import me.miicro.votekick.util.MessageSender;
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -75,7 +73,7 @@ public class VoteExecutor {
                     MessageSender.broadcastMessage(plugin.getServer(), "5 seconds remaining.");
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 20L, 20L);
+        }.runTaskTimerAsynchronously(plugin, 20, 20);
         //TODO print how many votes needed
         // print who is being voted out by who
         // print time remaining 60s

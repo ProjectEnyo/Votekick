@@ -3,7 +3,6 @@ package me.miicro.votekick.commands;
 import me.miicro.votekick.Votekick;
 import me.miicro.votekick.util.MessageSender;
 import me.miicro.votekick.vote.VoteExecutor;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

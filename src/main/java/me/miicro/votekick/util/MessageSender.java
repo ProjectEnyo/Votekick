@@ -9,15 +9,15 @@ public class MessageSender {
     private final static String CPLUGIN_PREFIX = "&C[&FVotekick&C]&F ";
 
     public static void sendToPlayer (Player p, String message) {
-        p.sendMessage(CPLUGIN_PREFIX + message);
+        p.sendMessage(ChatColor.translateAlternateColorCodes('&',CPLUGIN_PREFIX + message));
     }
 
     public static void broadcastMessage (Server server, String message) {
-        server.broadcastMessage(CPLUGIN_PREFIX + message);
+        server.broadcastMessage(ChatColor.translateAlternateColorCodes('&',CPLUGIN_PREFIX + message));
     }
 
     public static void sendToConsole (Server server, String message) {
-        server.getConsoleSender().sendMessage(PLUGIN_PREFIX + message);
+        server.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',PLUGIN_PREFIX + message));
     }
 
 }

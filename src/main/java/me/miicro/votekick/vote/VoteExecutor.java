@@ -14,7 +14,7 @@ public class VoteExecutor {
     private Map<UUID, String> votedPlayers = new HashMap<UUID, String>();
     private Player playerToBeKicked; // player getting votted off
     private int votesFor = 0;
-    private int neededVotes = 0;
+    private int neededVotes = 1;
     private Votekick plugin;
     private double votePercentage = 0.5; // TODO read from config
     private int voteTime = 30; //TODO get from config
@@ -44,12 +44,13 @@ public class VoteExecutor {
 
     public void starVote(Player pStarted, Player pVoted) {
         isVoting = true;
-        neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() / votePercentage);
+        //neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() / votePercentage);
         cVoteTime = voteTime;
         String startMessage = pStarted.getDisplayName() + " has started a vote to kick " + pVoted.getDisplayName()
                 + ". " + neededVotes + " are required.\n" + "Use &2/votekick <yes/no>&f to vote";
         String timeRemaining = "Time reamining: ";
         addToVoted(pStarted);
+        votesFor++;
 
         new BukkitRunnable() {
             int halftime = voteTime/2;
@@ -95,9 +96,7 @@ public class VoteExecutor {
             if (vote.toLowerCase().equals("yes")) {
                 votesFor++;
             }
-        } else if (playerToBeKicked.getUniqueId().equals(pVoter.getUniqueId())) {
-            MessageSender.sendToPlayer(pVoter, "You cannot vote for yourself.");
-        }else{
+        } else{
             MessageSender.sendToPlayer(pVoter, "You have already voted!");
         }
     }

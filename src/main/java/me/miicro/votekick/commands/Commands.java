@@ -44,13 +44,14 @@ public class Commands implements CommandExecutor {
         if (voteExecutor.getIsVoting()) {
             // Voted yes/no, check if player is not voting for themselves
             if (parameter.equals(CommandArgs.YES.value) || parameter.equals(CommandArgs.NO.value) ) {
+                //TODO fix this so it's p.equals()
                 if (p.getName().equals(voteExecutor.getPlayerInVoting())) {
                     MessageSender.sendToPlayer(p, "You may not vote for yourself!");
                     return true;
                 }
-                //TODO count vote + select player as voted
                 MessageSender.sendToConsole(server, p.getDisplayName() + " has voted " + parameter.toLowerCase() + ".");
                 MessageSender.sendToPlayer(p, "Voted " + parameter.toLowerCase());
+                voteExecutor.castVote(p, parameter.toLowerCase());
             }
             // handle other args (STOP and RELOAD should work, RELOAD is handled earlier)
             else {

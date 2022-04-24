@@ -1,0 +1,10 @@
+# Minimum number of players on the server required to start the vote
+min-players: 2
+
+# Voting time in seconds
+vote-time: 30
+
+# The percentage of players needed to vote for the vote to pass. Decimal or a number
+needed-votes: 0.5
+
+kick-message: "You have been vote kicked off the server!""

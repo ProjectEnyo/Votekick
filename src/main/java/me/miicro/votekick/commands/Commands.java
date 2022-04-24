@@ -49,7 +49,7 @@ public class Commands implements CommandExecutor {
                     MessageSender.sendToPlayer(p, "You may not vote for yourself!");
                     return true;
                 }
-                MessageSender.sendToConsole(server, p.getDisplayName() + " has voted " + parameter.toLowerCase() + ".");
+                MessageSender.sendToConsole(server, p.getName() + " has voted " + parameter.toLowerCase() + ".");
                 MessageSender.sendToPlayer(p, "Voted " + parameter.toLowerCase());
                 voteExecutor.castVote(p, parameter.toLowerCase());
             }

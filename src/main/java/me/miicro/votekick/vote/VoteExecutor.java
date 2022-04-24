@@ -14,7 +14,7 @@ public class VoteExecutor {
     private Map<UUID, String> votedPlayers = new HashMap<UUID, String>();
     private Player playerToBeKicked; // player getting votted off
     private int votesFor = 0;
-    private int neededVotes = 1;
+    private int neededVotes = 3;
     private Votekick plugin;
     private double votePercentage = 0.5; // TODO read from config
     private int voteTime = 30; //TODO get from config
@@ -43,15 +43,20 @@ public class VoteExecutor {
     }
 
     public void starVote(Player pStarted, Player pVoted) {
+        // TODO count votes needed
+        // print start message
         isVoting = true;
         //neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() / votePercentage);
         cVoteTime = voteTime;
-        String startMessage = pStarted.getDisplayName() + " has started a vote to kick " + pVoted.getDisplayName()
+        String startMessage = pStarted.getName() + " has started a vote to kick " + pVoted.getName()
                 + ". " + neededVotes + " are required.\n" + "Use &2/votekick <yes/no>&f to vote";
-        String timeRemaining = "Time reamining: ";
+        String timeRemaining = "Time remaining: " + voteTime + " seconds.";
+        addToVoted(pStarted);
         addToVoted(pStarted);
         votesFor++;
 
+        MessageSender.broadcastMessage(plugin.getServer(), startMessage);
+        MessageSender.broadcastMessage(plugin.getServer(), timeRemaining);
         new BukkitRunnable() {
             int halftime = voteTime/2;
             @Override
@@ -59,12 +64,12 @@ public class VoteExecutor {
                 cVoteTime--;
                 if (cVoteTime == 0 || votesFor >= neededVotes) {
                      if (votesFor >= neededVotes) {
-                         MessageSender.broadcastMessage(plugin.getServer(), pVoted.getDisplayName() + " has been kicked out!");
+                         MessageSender.broadcastMessage(plugin.getServer(), pVoted.getName() + " has been kicked out!");
                          Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                              public void run() {
                                  pVoted.kickPlayer("You have been kicked from the server!");
                              }
-                         }, 10L);
+                         }, 20L);
                      } else {
                         MessageSender.broadcastMessage(plugin.getServer(), "The kick vote did not pass!");
                      }
@@ -119,7 +124,7 @@ public class VoteExecutor {
      */
     public void stopVote(Player p) {
         MessageSender.broadcastMessage(plugin.getServer(), "The vote has been cancelled.");
-        MessageSender.sendToConsole(plugin.getServer(), p.getDisplayName() + " has cancelled the kick vote.");
+        MessageSender.sendToConsole(plugin.getServer(), p.getName() + " has cancelled the kick vote.");
         endVote();
     }
 }

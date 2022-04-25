@@ -40,6 +40,12 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
+        if (parameter.equals(CommandArgs.RELOAD.value)) {
+            voteExecutor.reloadConfig();
+            MessageSender.sendToPlayer(p, "Config reloaded.");
+            return true;
+        }
+
         // Vote happening
         if (voteExecutor.getIsVoting()) {
             // Voted yes/no, check if player is not voting for themselves
@@ -55,10 +61,12 @@ public class Commands implements CommandExecutor {
             }
             // handle other args (STOP and RELOAD should work, RELOAD is handled earlier)
             else {
-                if (parameter.equals(CommandArgs.STOP.value) && p.isOp()) {
-                    //TODO stop vote
-                    MessageSender.sendToPlayer(p, "Vote cancelled.");
-                    MessageSender.sendToConsole(server, p.getName() + " has cancelled the vote.");
+                if ((parameter.equals(CommandArgs.STOP.value) || parameter.equals(CommandArgs.RELOAD.value)) && p.isOp()) {
+                    if (parameter.equals(CommandArgs.STOP.value)) {
+                        voteExecutor.stopVote(p);
+                        MessageSender.sendToPlayer(p, "Vote cancelled.");
+                        MessageSender.sendToConsole(server, p.getName() + " has cancelled the vote.");
+                    }
                 } else {
                     MessageSender.sendToPlayer(p, "Wait until the vote is finished to execute the command.");
                 }
@@ -69,16 +77,14 @@ public class Commands implements CommandExecutor {
             // Can't run YES/NO/STOP if vote's not going on
             if (parameter.matches(CommandArgs.YES.value+"|"+CommandArgs.NO.value+"|"+CommandArgs.STOP.value)) {
                 MessageSender.sendToPlayer(p, "No ongoing vote!");
-                return true;
             }
             Player votePlayer = server.getPlayerExact(parameter);
 
             if (votePlayer == null) {
                 MessageSender.sendToPlayer(p, "No such player online!");
-                return true;
             } else {
+                //TODO make sure can't vote themselves out
                 voteExecutor.starVote(p, votePlayer);
-                return true;
             }
         }
 

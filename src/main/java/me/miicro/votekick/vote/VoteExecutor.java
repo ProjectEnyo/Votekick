@@ -1,6 +1,7 @@
 package me.miicro.votekick.vote;
 
 import me.miicro.votekick.Votekick;
+import me.miicro.votekick.util.Config;
 import me.miicro.votekick.util.MessageSender;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,18 +11,25 @@ import java.util.*;
 
 public class VoteExecutor {
 
+    private Config config;
     private boolean isVoting = false;
     private Map<UUID, String> votedPlayers = new HashMap<UUID, String>();
     private Player playerToBeKicked; // player getting votted off
     private int votesFor = 0;
-    private int neededVotes = 3;
+    private int neededVotes;
+    private int neededPlayers;
     private Votekick plugin;
-    private double votePercentage = 0.5; // TODO read from config
-    private int voteTime = 30; //TODO get from config
+    private double votePercentage;
+    private int voteTime;
     private int cVoteTime;
 
-    public VoteExecutor(Votekick plugin) {
+    public VoteExecutor(Votekick plugin, Config config) {
         this.plugin = plugin;
+        this.config = config;
+        neededPlayers = config.getMinPlayers();
+        votePercentage = (config.getVotePercentage() > 1 ? config.getVotePercentage()/100 : config.getVotePercentage());
+        neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() / votePercentage);
+        voteTime = config.getVoteTime();
     }
 
     public void setVotePercentage (double percentage) {
@@ -38,15 +46,17 @@ public class VoteExecutor {
         votedPlayers.put(p.getUniqueId(), p.getName());
     }
 
-    private void readConfig(){
-
+    public void reloadConfig() {
+        config.reload();
     }
 
     public void starVote(Player pStarted, Player pVoted) {
-        // TODO count votes needed
-        // print start message
+        int playersOnline = plugin.getServer().getOnlinePlayers().size();
+        if (neededPlayers > playersOnline) {
+            MessageSender.sendToPlayer(pStarted, "In order for the vote to start, " + neededPlayers + " players have to be online.");
+            return;
+        }
         isVoting = true;
-        //neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() / votePercentage);
         cVoteTime = voteTime;
         String startMessage = pStarted.getName() + " has started a vote to kick " + pVoted.getName()
                 + ". " + neededVotes + " are required.\n" + "Use &2/votekick <yes/no>&f to vote";
@@ -67,7 +77,7 @@ public class VoteExecutor {
                          MessageSender.broadcastMessage(plugin.getServer(), pVoted.getName() + " has been kicked out!");
                          Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                              public void run() {
-                                 pVoted.kickPlayer("You have been kicked from the server!");
+                                 pVoted.kickPlayer(config.getKickMessage());
                              }
                          }, 20L);
                      } else {
@@ -86,13 +96,6 @@ public class VoteExecutor {
                 }
             }
         }.runTaskTimerAsynchronously(plugin, 20, 20);
-        //TODO print how many votes needed
-        // print who is being voted out by who
-        // print time remaining 60s
-        // print time remaining 30s
-        // print time remaining 5s
-        // end vote if required votes reached
-
     }
 
     public void castVote (Player pVoter, String vote) {

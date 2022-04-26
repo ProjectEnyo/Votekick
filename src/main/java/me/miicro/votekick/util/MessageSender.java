@@ -6,10 +6,14 @@ import org.bukkit.entity.Player;
 
 public class MessageSender {
     private final static String PLUGIN_PREFIX = "[Votekick] ";
-    private final static String CPLUGIN_PREFIX = "&C[&FVotekick&C]&F ";
+    private final static String CPLUGIN_PREFIX = "&3[Votekick]&f ";
 
-    public static void sendToPlayer (Player p, String message) {
-        p.sendMessage(ChatColor.translateAlternateColorCodes('&',CPLUGIN_PREFIX + message));
+    public static void sendToPlayer (Player p, String message, boolean isWarn) {
+        if (isWarn) {
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&',CPLUGIN_PREFIX + "&c" + message));
+        } else {
+            p.sendMessage(ChatColor.translateAlternateColorCodes('&',CPLUGIN_PREFIX + message));
+        }
     }
 
     public static void broadcastMessage (Server server, String message) {

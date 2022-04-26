@@ -49,15 +49,15 @@ public class VoteExecutor {
         int playersOnline = plugin.getServer().getOnlinePlayers().size();
         playerToBeKicked = pVoted;
         if (neededPlayers > playersOnline) {
-            MessageSender.sendToPlayer(pStarted, "In order for the vote to start, " + neededPlayers + " players have to be online.");
+            MessageSender.sendToPlayer(pStarted, "In order for the vote to start, &a" + neededPlayers + "&f players have to be online.", false);
             return;
         }
         neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() * votePercentage);
         isVoting = true;
         cVoteTime = voteTime;
-        String startMessage = "&b" + pStarted.getName() + "&f has started a vote to kick &b" + pVoted.getName()
+        String startMessage = "&a" + pStarted.getName() + "&f has started a vote to kick &a" + pVoted.getName()
                 + "&f. " + neededVotes + " votes are required for the vote to pass.";
-        String instructions = "Use &2/votekick <yes|no>&f to vote.";
+        String instructions = "Use &a/votekick <yes|no>&f to vote.";
         String timeRemaining = voteTime + " seconds remaining.";
         addToVoted(pStarted);
         addToVoted(pStarted);
@@ -70,10 +70,13 @@ public class VoteExecutor {
             int halftime = voteTime/2;
             @Override
             public void run() {
+                if (!isVoting) {
+                    this.cancel();
+                }
                 cVoteTime--;
                 if (cVoteTime == 0 || votesFor >= neededVotes) {
                      if (votesFor >= neededVotes) {
-                         MessageSender.broadcastMessage(plugin.getServer(), pVoted.getName() + " has been kicked!");
+                         MessageSender.broadcastMessage(plugin.getServer(), "&a" + pVoted.getName() + "&f has been kicked!");
                          Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
                              public void run() {
                                  pVoted.kickPlayer(config.getKickMessage());
@@ -103,10 +106,10 @@ public class VoteExecutor {
             if (vote.equalsIgnoreCase("yes")) {
                 votesFor++;
                 MessageSender.sendToConsole(plugin.getServer(), pVoter.getName() + " has voted " + vote + ".");
-                MessageSender.sendToPlayer(pVoter, "Voted " + vote + ".");
+                MessageSender.sendToPlayer(pVoter, "Voted " + vote + ".", false);
             }
         } else{
-            MessageSender.sendToPlayer(pVoter, "You have already voted!");
+            MessageSender.sendToPlayer(pVoter, "You have already voted!", false);
         }
     }
 

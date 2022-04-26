@@ -36,7 +36,7 @@ public class Commands implements CommandExecutor {
 
         // Check permissions first
         if ((parameter.equalsIgnoreCase(CommandArgs.RELOAD.value) || parameter.equalsIgnoreCase(CommandArgs.STOP.value)) && (!p.isOp() || !p.hasPermission("votekick.staff"))) {
-            MessageSender.sendToPlayer(p, "Insufficient permissions.");
+            MessageSender.sendToPlayer(p, "You don't have permission to do this.");
             return true;
         }
 
@@ -51,7 +51,7 @@ public class Commands implements CommandExecutor {
             // Voted yes/no, check if player is not voting for themselves
             if (parameter.equalsIgnoreCase(CommandArgs.YES.value) || parameter.equalsIgnoreCase(CommandArgs.NO.value) ) {
                 if (p.getUniqueId().equals(voteExecutor.getPlayerInVoting().getUniqueId())) {
-                    MessageSender.sendToPlayer(p, "You may not vote for yourself!");
+                    MessageSender.sendToPlayer(p, "You may not participate in this vote!");
                     return true;
                 }
                 voteExecutor.castVote(p, parameter.toLowerCase());
@@ -61,11 +61,9 @@ public class Commands implements CommandExecutor {
                 if ((parameter.equalsIgnoreCase(CommandArgs.STOP.value) || parameter.equalsIgnoreCase(CommandArgs.RELOAD.value)) && (p.isOp() || p.hasPermission("votekick.staff"))) {
                     if (parameter.equalsIgnoreCase(CommandArgs.STOP.value)) {
                         voteExecutor.stopVote(p);
-                        MessageSender.sendToPlayer(p, "Vote cancelled.");
-                        MessageSender.sendToConsole(server, p.getName() + " has cancelled the vote.");
                     }
                 } else {
-                    MessageSender.sendToPlayer(p, "Wait until the vote is finished to execute the command.");
+                    MessageSender.sendToPlayer(p, "Only one vote at a time is allowed!");
                 }
             }
         }
@@ -74,6 +72,7 @@ public class Commands implements CommandExecutor {
             // Can't run YES/NO/STOP if vote's not going on
             if (parameter.matches(CommandArgs.YES.value+"|"+CommandArgs.NO.value+"|"+CommandArgs.STOP.value)) {
                 MessageSender.sendToPlayer(p, "No ongoing vote!");
+                return true;
             }
             Player votePlayer = server.getPlayerExact(parameter);
 

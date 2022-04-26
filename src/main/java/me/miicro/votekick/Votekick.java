@@ -7,10 +7,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Votekick extends JavaPlugin {
 
-    @Override
-    public void onEnable() {
-        this.getCommand("votekick").setExecutor(new Commands(this, new VoteExecutor(this, new Config(this))));
-    }
-
-
+  @Override
+  public void onEnable() {
+    this.getCommand("votekick")
+        .setExecutor(new Commands(this, new VoteExecutor(this, new Config(this))));
+  }
 }

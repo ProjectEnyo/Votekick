@@ -13,10 +13,10 @@ public class VoteExecutor {
 
     private Config config;
     private boolean isVoting = false;
-    private Map<UUID, String> votedPlayers = new HashMap<UUID, String>();
-    private Player playerToBeKicked; // player getting votted off
+    private Set<Player> votedPlayers = new HashSet<>();
+    private Player playerToBeKicked; // player getting voted off
     private int votesFor = 0;
-    private int neededVotes;
+    private int neededVotes = 0;
     private int neededPlayers;
     private Votekick plugin;
     private double votePercentage;
@@ -27,13 +27,8 @@ public class VoteExecutor {
         this.plugin = plugin;
         this.config = config;
         neededPlayers = config.getMinPlayers();
-        votePercentage = (config.getVotePercentage() > 1 ? config.getVotePercentage()/100 : config.getVotePercentage());
-        neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() / votePercentage);
+        votePercentage = config.getVotePercentage();
         voteTime = config.getVoteTime();
-    }
-
-    public void setVotePercentage (double percentage) {
-        this.votePercentage = percentage;
     }
 
     public boolean getIsVoting() {
@@ -43,7 +38,7 @@ public class VoteExecutor {
     public Player getPlayerInVoting() { return this.playerToBeKicked; }
 
     private void addToVoted(Player p) {
-        votedPlayers.put(p.getUniqueId(), p.getName());
+        votedPlayers.add(p);
     }
 
     public void reloadConfig() {
@@ -52,20 +47,24 @@ public class VoteExecutor {
 
     public void starVote(Player pStarted, Player pVoted) {
         int playersOnline = plugin.getServer().getOnlinePlayers().size();
+        playerToBeKicked = pVoted;
         if (neededPlayers > playersOnline) {
             MessageSender.sendToPlayer(pStarted, "In order for the vote to start, " + neededPlayers + " players have to be online.");
             return;
         }
+        neededVotes = (int)(plugin.getServer().getOnlinePlayers().size() * votePercentage);
         isVoting = true;
         cVoteTime = voteTime;
         String startMessage = pStarted.getName() + " has started a vote to kick " + pVoted.getName()
-                + ". " + neededVotes + " are required.\n" + "Use &2/votekick <yes/no>&f to vote";
+                + ". " + neededVotes + " are required.";
+        String instructions = "Use &2/votekick <yes/no>&f to vote";
         String timeRemaining = "Time remaining: " + voteTime + " seconds.";
         addToVoted(pStarted);
         addToVoted(pStarted);
         votesFor++;
 
         MessageSender.broadcastMessage(plugin.getServer(), startMessage);
+        MessageSender.broadcastMessage(plugin.getServer(), instructions);
         MessageSender.broadcastMessage(plugin.getServer(), timeRemaining);
         new BukkitRunnable() {
             int halftime = voteTime/2;
@@ -99,10 +98,12 @@ public class VoteExecutor {
     }
 
     public void castVote (Player pVoter, String vote) {
-        if (!votedPlayers.containsKey(pVoter.getUniqueId())){
+        if (!votedPlayers.contains(pVoter)){
             addToVoted(pVoter);
-            if (vote.toLowerCase().equals("yes")) {
+            if (vote.equalsIgnoreCase("yes")) {
                 votesFor++;
+                MessageSender.sendToConsole(plugin.getServer(), pVoter.getName() + " has voted " + vote + ".");
+                MessageSender.sendToPlayer(pVoter, "Voted " + vote);
             }
         } else{
             MessageSender.sendToPlayer(pVoter, "You have already voted!");
@@ -116,7 +117,7 @@ public class VoteExecutor {
     private void endVote() {
         isVoting = false;
         votesFor = 0;
-        votedPlayers = new HashMap<UUID, String>();
+        votedPlayers = new HashSet<>();
         playerToBeKicked = null;
         cVoteTime = voteTime;
     }

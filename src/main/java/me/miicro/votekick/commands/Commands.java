@@ -31,16 +31,16 @@ public class Commands implements CommandExecutor {
             return false;
         }
 
-        String parameter = args[0].toLowerCase();
+        String parameter = args[0];
         Player p = (Player) sender;
 
         // Check permissions first
-        if ((parameter.equals(CommandArgs.RELOAD.value) || parameter.equals(CommandArgs.STOP.value)) && !p.isOp()) {
+        if ((parameter.equalsIgnoreCase(CommandArgs.RELOAD.value) || parameter.equalsIgnoreCase(CommandArgs.STOP.value)) && (!p.isOp() || !p.hasPermission("votekick.staff"))) {
             MessageSender.sendToPlayer(p, "Insufficient permissions.");
             return true;
         }
 
-        if (parameter.equals(CommandArgs.RELOAD.value)) {
+        if (parameter.equalsIgnoreCase(CommandArgs.RELOAD.value)) {
             voteExecutor.reloadConfig();
             MessageSender.sendToPlayer(p, "Config reloaded.");
             return true;
@@ -49,20 +49,17 @@ public class Commands implements CommandExecutor {
         // Vote happening
         if (voteExecutor.getIsVoting()) {
             // Voted yes/no, check if player is not voting for themselves
-            if (parameter.equals(CommandArgs.YES.value) || parameter.equals(CommandArgs.NO.value) ) {
-                //TODO fix this so it's p.equals()
-                if (p.getName().equals(voteExecutor.getPlayerInVoting())) {
+            if (parameter.equalsIgnoreCase(CommandArgs.YES.value) || parameter.equalsIgnoreCase(CommandArgs.NO.value) ) {
+                if (p.getUniqueId().equals(voteExecutor.getPlayerInVoting().getUniqueId())) {
                     MessageSender.sendToPlayer(p, "You may not vote for yourself!");
                     return true;
                 }
-                MessageSender.sendToConsole(server, p.getName() + " has voted " + parameter.toLowerCase() + ".");
-                MessageSender.sendToPlayer(p, "Voted " + parameter.toLowerCase());
                 voteExecutor.castVote(p, parameter.toLowerCase());
             }
             // handle other args (STOP and RELOAD should work, RELOAD is handled earlier)
             else {
-                if ((parameter.equals(CommandArgs.STOP.value) || parameter.equals(CommandArgs.RELOAD.value)) && p.isOp()) {
-                    if (parameter.equals(CommandArgs.STOP.value)) {
+                if ((parameter.equalsIgnoreCase(CommandArgs.STOP.value) || parameter.equalsIgnoreCase(CommandArgs.RELOAD.value)) && (p.isOp() || p.hasPermission("votekick.staff"))) {
+                    if (parameter.equalsIgnoreCase(CommandArgs.STOP.value)) {
                         voteExecutor.stopVote(p);
                         MessageSender.sendToPlayer(p, "Vote cancelled.");
                         MessageSender.sendToConsole(server, p.getName() + " has cancelled the vote.");
@@ -83,8 +80,13 @@ public class Commands implements CommandExecutor {
             if (votePlayer == null) {
                 MessageSender.sendToPlayer(p, "No such player online!");
             } else {
-                //TODO make sure can't vote themselves out
-                voteExecutor.starVote(p, votePlayer);
+                if (p.getUniqueId().equals(votePlayer.getUniqueId())) {
+                    MessageSender.sendToPlayer(p, "You cannot start a vote against yourself!");
+                } else if (votePlayer.isOp() || votePlayer.hasPermission("votekick.staff")) {
+                    MessageSender.sendToPlayer(p, "You cannot start a vote against a staff member!");
+                }else {
+                    voteExecutor.starVote(p, votePlayer);
+                }
             }
         }
 

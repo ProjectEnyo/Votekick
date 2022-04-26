@@ -44,7 +44,7 @@ public class Config {
             config.set("min-players", 2);
             saveConfig();
         }
-        return (int) config.get("min-players");
+        return config.getInt("min-players");
     }
 
     public int getVoteTime() {
@@ -52,7 +52,7 @@ public class Config {
             config.set("vote-time", 30);
             saveConfig();
         }
-        return (int) config.get("vote-time");
+        return config.getInt("vote-time");
     }
 
     public double getVotePercentage() {
@@ -60,7 +60,7 @@ public class Config {
             config.set("needed-votes", 0.5);
             saveConfig();
         }
-        double nVotes = (double) config.get("needed-votes");
+        double nVotes = config.getDouble("needed-votes");
         if (nVotes > 1) {
             nVotes = nVotes / 100;
         }
@@ -72,7 +72,7 @@ public class Config {
             config.set("kick-message", "You have been vote kicked off the server!");
             saveConfig();
         }
-        return (String) config.get("kick-message");
+        return config.getString("kick-message");
     }
 
 }

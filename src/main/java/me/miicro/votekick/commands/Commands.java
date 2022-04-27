@@ -27,7 +27,7 @@ public class Commands implements CommandExecutor {
       return true;
     }
 
-    if (args.length == 0 || args.length > 1) {
+    if (args.length != 1) {
       return false;
     }
 

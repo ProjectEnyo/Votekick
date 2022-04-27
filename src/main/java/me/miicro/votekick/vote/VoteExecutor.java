@@ -59,7 +59,12 @@ public class VoteExecutor {
           false);
       return;
     }
+
     neededVotes = (int) (plugin.getServer().getOnlinePlayers().size() * votePercentage);
+    if (votePercentage == 1) {
+      neededVotes -= 1;
+    }
+
     isVoting = true;
     cVoteTime = voteTime;
     String startMessage =

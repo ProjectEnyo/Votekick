@@ -60,7 +60,7 @@ public class VoteExecutor {
       return;
     }
 
-    neededVotes = (int) (plugin.getServer().getOnlinePlayers().size() * votePercentage);
+    neededVotes = (int) Math.ceil(plugin.getServer().getOnlinePlayers().size() * votePercentage);
     if (votePercentage == 1) {
       neededVotes -= 1;
     }

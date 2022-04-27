@@ -44,6 +44,9 @@ public class VoteExecutor {
 
   public void reloadConfig() {
     config.reload();
+    neededPlayers = config.getMinPlayers();
+    votePercentage = config.getVotePercentage();
+    voteTime = config.getVoteTime();
   }
 
   public void starVote(Player pStarted, Player pVoted) {

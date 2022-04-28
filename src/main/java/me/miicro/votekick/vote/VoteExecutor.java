@@ -15,7 +15,9 @@ public class VoteExecutor {
   private Set<Player> votedPlayers = new HashSet<>();
   private Player playerToBeKicked; // player getting voted off
   private int votesFor = 0;
-  private int neededVotes = 0;
+  private int votedAgainst = 0;
+  private int neededVotesFor = 0;
+  private int neededVotesAgainst = 0;
   private int neededPlayers;
   private Votekick plugin;
   private double votePercentage;
@@ -60,10 +62,12 @@ public class VoteExecutor {
       return;
     }
 
-    neededVotes = (int) Math.ceil(plugin.getServer().getOnlinePlayers().size() * votePercentage);
+    neededVotesFor = (int) Math.round(plugin.getServer().getOnlinePlayers().size() * votePercentage);
     if (votePercentage == 1) {
-      neededVotes -= 1;
+      neededVotesFor -= 1;
     }
+
+    neededVotesAgainst = plugin.getServer().getOnlinePlayers().size() - neededVotesFor;
 
     isVoting = true;
     cVoteTime = voteTime;
@@ -73,17 +77,17 @@ public class VoteExecutor {
             + "&f has started a vote to kick &a"
             + pVoted.getName()
             + "&f. "
-            + neededVotes
+            + neededVotesFor
             + " votes are required for the vote to pass.";
     String instructions = "Use &a/votekick <yes|no>&f to vote.";
     String timeRemaining = voteTime + " seconds remaining.";
-    addToVoted(pStarted);
     addToVoted(pStarted);
     votesFor++;
 
     MessageSender.broadcastMessage(plugin.getServer(), startMessage);
     MessageSender.broadcastMessage(plugin.getServer(), instructions);
     MessageSender.broadcastMessage(plugin.getServer(), timeRemaining);
+
     new BukkitRunnable() {
       int halftime = voteTime / 2;
 
@@ -93,8 +97,8 @@ public class VoteExecutor {
           this.cancel();
         }
         cVoteTime--;
-        if (cVoteTime == 0 || votesFor >= neededVotes) {
-          if (votesFor >= neededVotes) {
+        if (cVoteTime == 0 || votesFor >= neededVotesFor || votedAgainst >= neededVotesAgainst) {
+          if (votesFor >= neededVotesFor) {
             MessageSender.broadcastMessage(
                 plugin.getServer(), "&a" + pVoted.getName() + "&f has been kicked!");
             Bukkit.getScheduler()
@@ -132,6 +136,8 @@ public class VoteExecutor {
         MessageSender.sendToConsole(
             plugin.getServer(), pVoter.getName() + " has voted " + vote + ".");
         MessageSender.sendToPlayer(pVoter, "Voted " + vote + ".", false);
+      } else {
+        votedAgainst++;
       }
     } else {
       MessageSender.sendToPlayer(pVoter, "You have already voted!", false);
@@ -145,6 +151,7 @@ public class VoteExecutor {
     votedPlayers = new HashSet<>();
     playerToBeKicked = null;
     cVoteTime = voteTime;
+    votedAgainst = 0;
   }
 
   /** Used to halt and ongoing vote */

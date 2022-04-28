@@ -62,7 +62,8 @@ public class VoteExecutor {
       return;
     }
 
-    neededVotesFor = (int) Math.round(plugin.getServer().getOnlinePlayers().size() * votePercentage);
+    neededVotesFor =
+        (int) Math.round(plugin.getServer().getOnlinePlayers().size() * votePercentage);
     if (votePercentage == 1) {
       neededVotesFor -= 1;
     }
@@ -106,7 +107,12 @@ public class VoteExecutor {
                     plugin,
                     new Runnable() {
                       public void run() {
-                        pVoted.kickPlayer(config.getKickMessage());
+                        plugin
+                            .getServer()
+                            .dispatchCommand(
+                                plugin.getServer().getConsoleSender(),
+                                String.format(config.getCommand(), pVoted.getName()));
+                        System.out.println(String.format(config.getCommand(), pVoted.getName()));
                       }
                     },
                     20L);

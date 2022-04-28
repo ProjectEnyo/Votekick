@@ -7,5 +7,5 @@ vote-time: 30
 # The percentage of players needed to vote for the vote to pass. Decimal or a number
 needed-votes: 0.5
 
-# Message displayed to the user when they are kicked
-kick-message: "You have been vote kicked off the server!"
+# Command executed when the vote passes
+command: "kick %s You have been vote kicked off the server!"

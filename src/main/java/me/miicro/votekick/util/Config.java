@@ -67,11 +67,11 @@ public class Config {
     return nVotes;
   }
 
-  public String getKickMessage() {
-    if (config.get("kick-message") == null) {
-      config.set("kick-message", "You have been vote kicked off the server!");
+  public String getCommand() {
+    if (config.get("command") == null) {
+      config.set("command", "kick %s You have been vote kicked off the server!");
       saveConfig();
     }
-    return config.getString("kick-message");
+    return config.getString("command");
   }
 }

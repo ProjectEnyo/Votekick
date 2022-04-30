@@ -68,10 +68,18 @@ public class Config {
   }
 
   public String getCommand() {
-    if (config.get("command") == null) {
+    if (config.getString("command") == null) {
       config.set("command", "kick %s You have been vote kicked off the server!");
       saveConfig();
     }
     return config.getString("command");
+  }
+
+  public boolean getPlaySound() {
+    if (config.get("play-sound") == null) {
+      config.set("play-sound", true);
+      saveConfig();
+    }
+    return config.getBoolean("play-sound");
   }
 }

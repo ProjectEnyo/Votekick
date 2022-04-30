@@ -5,6 +5,7 @@ import me.miicro.votekick.Votekick;
 import me.miicro.votekick.util.Config;
 import me.miicro.votekick.util.MessageSender;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -73,6 +74,12 @@ public class VoteExecutor {
     votesFor++;
     votesAgainst++;
 
+    if (config.getPlaySound()) {
+      plugin
+          .getServer()
+          .getOnlinePlayers()
+          .forEach(p -> p.playSound(p.getLocation(), Sound.CLICK, 0.3f, 0.6f));
+    }
     printVoteStartMessages(pStarted.getName(), pVoted.getName());
     MessageSender.broadcastMessage(
         plugin.getServer(),

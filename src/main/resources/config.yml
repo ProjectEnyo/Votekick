@@ -9,3 +9,6 @@ needed-votes: 0.5
 
 # Command executed when the vote passes. %s will be replaced by the kicked player name
 command: "kick %s You have been vote kicked off the server!"
+
+# True if play sound on vote start
+play-sound: true

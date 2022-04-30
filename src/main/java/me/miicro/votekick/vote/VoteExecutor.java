@@ -15,14 +15,13 @@ public class VoteExecutor {
   private Set<Player> votedPlayers = new HashSet<>();
   private Player playerToBeKicked; // player getting voted off
   private int votesFor = 0;
-  private int votedAgainst = 0;
+  private int votesAgainst = 0;
   private int neededVotesFor = 0;
   private int neededVotesAgainst = 0;
   private int neededPlayers;
   private Votekick plugin;
   private double votePercentage;
   private int voteTime;
-  private int cVoteTime;
 
   public VoteExecutor(Votekick plugin, Config config) {
     this.plugin = plugin;
@@ -53,7 +52,7 @@ public class VoteExecutor {
 
   public void starVote(Player pStarted, Player pVoted) {
     int playersOnline = plugin.getServer().getOnlinePlayers().size();
-    playerToBeKicked = pVoted;
+
     if (neededPlayers > playersOnline) {
       MessageSender.sendToPlayer(
           pStarted,
@@ -62,35 +61,26 @@ public class VoteExecutor {
       return;
     }
 
-    neededVotesFor =
-        (int) Math.round(plugin.getServer().getOnlinePlayers().size() * votePercentage);
+    neededVotesFor = (int) Math.round(playersOnline * votePercentage);
     if (votePercentage == 1) {
       neededVotesFor -= 1;
     }
-
-    neededVotesAgainst = plugin.getServer().getOnlinePlayers().size() - neededVotesFor;
+    neededVotesAgainst = playersOnline - neededVotesFor;
 
     isVoting = true;
-    cVoteTime = voteTime;
-    String startMessage =
-        "&a"
-            + pStarted.getName()
-            + "&f has started a vote to kick &a"
-            + pVoted.getName()
-            + "&f. "
-            + neededVotesFor
-            + " votes are required for the vote to pass.";
-    String instructions = "Use &a/votekick <yes|no>&f to vote.";
-    String timeRemaining = voteTime + " seconds remaining.";
+    playerToBeKicked = pVoted;
     addToVoted(pStarted);
     votesFor++;
+    votesAgainst++;
 
-    MessageSender.broadcastMessage(plugin.getServer(), startMessage);
-    MessageSender.broadcastMessage(plugin.getServer(), instructions);
-    MessageSender.broadcastMessage(plugin.getServer(), timeRemaining);
+    printVoteStartMessages(pStarted.getName(), pVoted.getName());
+    MessageSender.broadcastMessage(
+        plugin.getServer(),
+        "&fCurrent votes:  &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
 
     new BukkitRunnable() {
       int halftime = voteTime / 2;
+      int cVoteTime = voteTime;
 
       @Override
       public void run() {
@@ -98,7 +88,7 @@ public class VoteExecutor {
           this.cancel();
         }
         cVoteTime--;
-        if (cVoteTime == 0 || votesFor >= neededVotesFor || votedAgainst >= neededVotesAgainst) {
+        if (cVoteTime == 0 || votesFor >= neededVotesFor || votesAgainst >= neededVotesAgainst) {
           if (votesFor >= neededVotesFor) {
             MessageSender.broadcastMessage(
                 plugin.getServer(), "&a" + pVoted.getName() + "&f has been kicked!");
@@ -112,26 +102,53 @@ public class VoteExecutor {
                             .dispatchCommand(
                                 plugin.getServer().getConsoleSender(),
                                 String.format(config.getCommand(), pVoted.getName()));
-                        System.out.println(String.format(config.getCommand(), pVoted.getName()));
                       }
                     },
                     20L);
           } else {
-            MessageSender.broadcastMessage(plugin.getServer(), "The vote did not pass!");
+            MessageSender.broadcastMessage(
+                plugin.getServer(),
+                "The vote did not pass! &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
           }
           endVote();
           this.cancel();
-        }
+        } else {
+          if (cVoteTime % 10 == 0) {
+            MessageSender.broadcastMessage(
+                plugin.getServer(),
+                "&fCurrent votes:  &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
+          }
 
-        if (cVoteTime == halftime) {
-          MessageSender.broadcastMessage(plugin.getServer(), halftime + " seconds remaining.");
-        }
+          if (cVoteTime == halftime) {
+            MessageSender.broadcastMessage(plugin.getServer(), halftime + " seconds remaining.");
+          }
 
-        if (halftime > 5 && cVoteTime == 5) {
-          MessageSender.broadcastMessage(plugin.getServer(), "5 seconds remaining.");
+          if (halftime > 5 && cVoteTime == 5) {
+            MessageSender.broadcastMessage(plugin.getServer(), "5 seconds remaining.");
+            MessageSender.broadcastMessage(
+                plugin.getServer(),
+                "&fCurrent votes:  &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
+          }
         }
       }
     }.runTaskTimerAsynchronously(plugin, 20, 20);
+  }
+
+  private void printVoteStartMessages(String started, String voted) {
+    String startMessage =
+        "&a"
+            + started
+            + "&f has started a vote to kick &a"
+            + voted
+            + "&f. "
+            + neededVotesFor
+            + " votes are required for the vote to pass.";
+    String instructions = "Use &a/votekick <yes|no>&f to vote.";
+    String timeRemaining = voteTime + " seconds remaining.";
+
+    MessageSender.broadcastMessage(plugin.getServer(), startMessage);
+    MessageSender.broadcastMessage(plugin.getServer(), instructions);
+    MessageSender.broadcastMessage(plugin.getServer(), timeRemaining);
   }
 
   public void castVote(Player pVoter, String vote) {
@@ -139,12 +156,12 @@ public class VoteExecutor {
       addToVoted(pVoter);
       if (vote.equalsIgnoreCase("yes")) {
         votesFor++;
-        MessageSender.sendToConsole(
-            plugin.getServer(), pVoter.getName() + " has voted " + vote + ".");
-        MessageSender.sendToPlayer(pVoter, "Voted " + vote + ".", false);
       } else {
-        votedAgainst++;
+        votesAgainst++;
       }
+      MessageSender.sendToConsole(
+          plugin.getServer(), pVoter.getName() + " has voted " + vote + ".");
+      MessageSender.sendToPlayer(pVoter, "Voted " + vote + ".", false);
     } else {
       MessageSender.sendToPlayer(pVoter, "You have already voted!", false);
     }
@@ -156,8 +173,7 @@ public class VoteExecutor {
     votesFor = 0;
     votedPlayers = new HashSet<>();
     playerToBeKicked = null;
-    cVoteTime = voteTime;
-    votedAgainst = 0;
+    votesAgainst = 0;
   }
 
   /** Used to halt and ongoing vote */

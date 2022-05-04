@@ -107,6 +107,8 @@ public class VoteExecutor {
                     plugin,
                     new Runnable() {
                       public void run() {
+                        if (config.getLightning())
+                          pVoted.getWorld().strikeLightning(pVoted.getLocation());
                         if (config.getCommand().length() == 0) {
                           pVoted.kickPlayer("You have been vote kicked off the server!");
                         } else {

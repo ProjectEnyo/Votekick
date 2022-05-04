@@ -82,4 +82,12 @@ public class Config {
     }
     return config.getBoolean("play-sound");
   }
+
+  public boolean getLightning() {
+    if (config.get("lightning") == null) {
+      config.set("lightning", true);
+      saveConfig();
+    }
+    return config.getBoolean("lightning");
+  }
 }

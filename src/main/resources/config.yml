@@ -14,3 +14,6 @@ command: ""
 
 # True if play sound on vote start
 play-sound: true
+
+# If true, lightning will be struck when the vote kick passes
+lightning: true

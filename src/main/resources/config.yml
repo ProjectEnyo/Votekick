@@ -1,5 +1,5 @@
 # Minimum number of players on the server required to start the vote
-min-players: 2
+min-players: 3
 
 # Voting time in seconds
 vote-time: 30
@@ -8,7 +8,9 @@ vote-time: 30
 needed-votes: 0.5
 
 # Command executed when the vote passes. %s will be replaced by the kicked player name
-command: "kick %s You have been vote kicked off the server!"
+# Example : "kick %s You have been vote kicked off the server!"
+# Leave empty to kick the player
+command: ""
 
 # True if play sound on vote start
 play-sound: true

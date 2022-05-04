@@ -69,7 +69,7 @@ public class Config {
 
   public String getCommand() {
     if (config.getString("command") == null) {
-      config.set("command", "kick %s You have been vote kicked off the server!");
+      config.set("command", "");
       saveConfig();
     }
     return config.getString("command");

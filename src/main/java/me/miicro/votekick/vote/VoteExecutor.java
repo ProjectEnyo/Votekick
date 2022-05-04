@@ -14,7 +14,7 @@ public class VoteExecutor {
   private Config config;
   private boolean isVoting = false;
   private Set<Player> votedPlayers = new HashSet<>();
-  private Player playerToBeKicked; // player getting voted off
+  private Player playerToBeKicked;
   private int votesFor = 0;
   private int votesAgainst = 0;
   private int neededVotesFor = 0;
@@ -81,9 +81,6 @@ public class VoteExecutor {
           .forEach(p -> p.playSound(p.getLocation(), Sound.CLICK, 0.3f, 0.6f));
     }
     printVoteStartMessages(pStarted.getName(), pVoted.getName());
-    MessageSender.broadcastMessage(
-        plugin.getServer(),
-        "&fCurrent votes:  &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
 
     new BukkitRunnable() {
       int halftime = voteTime / 2;
@@ -95,20 +92,30 @@ public class VoteExecutor {
           this.cancel();
         }
         cVoteTime--;
-        if (cVoteTime == 0 || votesFor >= neededVotesFor || votesAgainst >= neededVotesAgainst) {
+        if (cVoteTime == 0 || votesFor >= neededVotesFor || votesAgainst > neededVotesAgainst) {
           if (votesFor >= neededVotesFor) {
             MessageSender.broadcastMessage(
-                plugin.getServer(), "&a" + pVoted.getName() + "&f has been kicked!");
+                plugin.getServer(),
+                "&a"
+                    + pVoted.getName()
+                    + "&f has been kicked! &a\u2714&f"
+                    + votesFor
+                    + " | &c\u2715&f"
+                    + votesAgainst);
             Bukkit.getScheduler()
                 .runTaskLater(
                     plugin,
                     new Runnable() {
                       public void run() {
-                        plugin
-                            .getServer()
-                            .dispatchCommand(
-                                plugin.getServer().getConsoleSender(),
-                                String.format(config.getCommand(), pVoted.getName()));
+                        if (config.getCommand().length() == 0) {
+                          pVoted.kickPlayer("You have been vote kicked off the server!");
+                        } else {
+                          plugin
+                              .getServer()
+                              .dispatchCommand(
+                                  plugin.getServer().getConsoleSender(),
+                                  String.format(config.getCommand(), pVoted.getName()));
+                        }
                       }
                     },
                     20L);
@@ -120,21 +127,14 @@ public class VoteExecutor {
           endVote();
           this.cancel();
         } else {
-          if (cVoteTime % 10 == 0) {
+          if (cVoteTime == halftime || (cVoteTime == 5 && halftime > 5)) {
             MessageSender.broadcastMessage(
                 plugin.getServer(),
-                "&fCurrent votes:  &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
-          }
-
-          if (cVoteTime == halftime) {
-            MessageSender.broadcastMessage(plugin.getServer(), halftime + " seconds remaining.");
-          }
-
-          if (halftime > 5 && cVoteTime == 5) {
-            MessageSender.broadcastMessage(plugin.getServer(), "5 seconds remaining.");
-            MessageSender.broadcastMessage(
-                plugin.getServer(),
-                "&fCurrent votes:  &a\u2714&f" + votesFor + " | &c\u2715 &f" + votesAgainst);
+                cVoteTime
+                    + " seconds remaining. &a\u2714&f"
+                    + votesFor
+                    + " | &c\u2715&f"
+                    + votesAgainst);
           }
         }
       }
@@ -151,7 +151,8 @@ public class VoteExecutor {
             + neededVotesFor
             + " votes are required for the vote to pass.";
     String instructions = "Use &a/votekick <yes|no>&f to vote.";
-    String timeRemaining = voteTime + " seconds remaining.";
+    String timeRemaining =
+        voteTime + " seconds remaining. &a\u2714&f" + votesFor + " | &c\u2715&f" + votesAgainst;
 
     MessageSender.broadcastMessage(plugin.getServer(), startMessage);
     MessageSender.broadcastMessage(plugin.getServer(), instructions);
